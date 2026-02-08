@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Password Generator - Regression Tests</title>
+  <style>
+    body { font-family: monospace; padding: 20px; max-width: 800px; margin: 0 auto; }
+    .pass { color: green; }
+    .fail { color: red; font-weight: bold; }
+    .test { margin: 4px 0; }
+    h2 { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Regression Tests</h1>
+  <div id="results"></div>
+  <script type="text/javascript" src="js/sha512.min.js"></script>
+  <script type="text/javascript" src="src/wordlist.js"></script>
+  <script type="text/javascript" src="src/seek_password.js"></script>
+  <script type="text/javascript">
+    var results = document.getElementById('results');
+    var passed = 0, failed = 0;
+
+    function assert(name, actual, expected) {
+      var ok = actual === expected;
+      if (ok) passed++; else failed++;
+      var div = document.createElement('div');
+      div.className = 'test ' + (ok ? 'pass' : 'fail');
+      div.textContent = (ok ? 'PASS' : 'FAIL') + ': ' + name;
+      if (!ok) {
+        div.textContent += ' | expected: "' + expected + '" | got: "' + actual + '"';
+      }
+      results.appendChild(div);
+    }
+
+    function section(title) {
+      var h = document.createElement('h2');
+      h.textContent = title;
+      results.appendChild(h);
+    }
+
+    (async function() {
+      // ========== v1 Tests ==========
+      section('v1 Algorithm');
+
+      var hash1 = hex_password("test", "qq");
+      assert("v1 hash length is 128", hash1.length, 128);
+
+      var pwd1 = seek_password(hash1, 16, 1, 1);
+      assert("v1 password length is 16", pwd1.length, 16);
+
+      // v1 determinism
+      var pwd1b = seek_password(hex_password("test", "qq"), 16, 1, 1);
+      assert("v1 determinism (same input = same output)", pwd1 === pwd1b, true);
+
+      // v1 category coverage (all options enabled)
+      assert("v1 contains lowercase", /[a-z]/.test(pwd1), true);
+      assert("v1 contains uppercase", /[A-Z]/.test(pwd1), true);
+      assert("v1 contains digit", /[0-9]/.test(pwd1), true);
+      assert("v1 contains punctuation", /[,.:;!?]/.test(pwd1), true);
+
+      // v1 lowercase-only mode
+      var pwd1lower = seek_password(hash1, 16, -1, -1);
+      assert("v1 lowercase-only has no uppercase", /[A-Z]/.test(pwd1lower), false);
+      assert("v1 lowercase-only has no punctuation", /[,.:;!?]/.test(pwd1lower), false);
+
+      // v1 different inputs produce different outputs
+      var hash1diff = hex_password("test", "wechat");
+      var pwd1diff = seek_password(hash1diff, 16, 1, 1);
+      assert("v1 different input = different output", pwd1 !== pwd1diff, true);
+
+      // ========== v2 Tests ==========
+      section('v2 Algorithm');
+
+      var bytes2 = await hex_password_v2("test", "qq");
+      assert("v2 derived key length is 128 bytes", bytes2.length, 128);
+
+      var pwd2 = seek_password_v2(bytes2, 16, 1, 1);
+      assert("v2 password length is 16", pwd2.length, 16);
+
+      // v2 determinism
+      var bytes2b = await hex_password_v2("test", "qq");
+      var pwd2b = seek_password_v2(bytes2b, 16, 1, 1);
+      assert("v2 determinism (same input = same output)", pwd2 === pwd2b, true);
+
+      // v2 category coverage (all options enabled)
+      assert("v2 contains lowercase", /[a-z]/.test(pwd2), true);
+      assert("v2 contains uppercase", /[A-Z]/.test(pwd2), true);
+      assert("v2 contains digit", /[0-9]/.test(pwd2), true);
+      assert("v2 contains punctuation", /[~!@#$%^&*()\-_=+]/.test(pwd2), true);
+
+      // v2 lowercase-only mode
+      var pwd2lower = seek_password_v2(bytes2, 16, -1, -1);
+      assert("v2 lowercase-only length is 16", pwd2lower.length, 16);
+      assert("v2 lowercase-only has no uppercase", /[A-Z]/.test(pwd2lower), false);
+      assert("v2 lowercase-only has no punctuation", /[~!@#$%^&*()\-_=+]/.test(pwd2lower), false);
+
+      // v2 different inputs produce different outputs
+      var bytes2diff = await hex_password_v2("test", "wechat");
+      var pwd2diff = seek_password_v2(bytes2diff, 16, 1, 1);
+      assert("v2 different input = different output", pwd2 !== pwd2diff, true);
+
+      // v2 max length stress test (20 chars with full charset)
+      var pwd2max = seek_password_v2(bytes2, 20, 1, 1);
+      assert("v2 max length 20 chars succeeds", pwd2max.length, 20);
+
+      // v2 various lengths
+      for (var len = 10; len <= 20; len++) {
+        var pwdLen = seek_password_v2(bytes2, len, 1, 1);
+        assert("v2 length " + len + " produces correct length", pwdLen.length, len);
+      }
+
+      // ========== Option Combinations ==========
+      section('Option Combinations');
+
+      // --- v1: punctuation OFF, case ON ---
+      var pwd1_noPunct = seek_password(hash1, 16, -1, 1);
+      assert("v1 no-punct+case: length 16", pwd1_noPunct.length, 16);
+      assert("v1 no-punct+case: has uppercase", /[A-Z]/.test(pwd1_noPunct), true);
+      assert("v1 no-punct+case: has digit", /[0-9]/.test(pwd1_noPunct), true);
+      assert("v1 no-punct+case: no punctuation", /[,.:;!?]/.test(pwd1_noPunct), false);
+
+      // --- v1: punctuation ON, case OFF ---
+      var pwd1_noCase = seek_password(hash1, 16, 1, -1);
+      assert("v1 punct+no-case: length 16", pwd1_noCase.length, 16);
+      assert("v1 punct+no-case: no uppercase", /[A-Z]/.test(pwd1_noCase), false);
+      assert("v1 punct+no-case: has digit", /[0-9]/.test(pwd1_noCase), true);
+      assert("v1 punct+no-case: has punctuation", /[,.:;!?]/.test(pwd1_noCase), true);
+
+      // --- v2: punctuation OFF, case ON ---
+      var pwd2_noPunct = seek_password_v2(bytes2, 16, -1, 1);
+      assert("v2 no-punct+case: length 16", pwd2_noPunct.length, 16);
+      assert("v2 no-punct+case: has uppercase", /[A-Z]/.test(pwd2_noPunct), true);
+      assert("v2 no-punct+case: has digit", /[0-9]/.test(pwd2_noPunct), true);
+      assert("v2 no-punct+case: no punctuation", /[~!@#$%^&*()\-_=+]/.test(pwd2_noPunct), false);
+
+      // --- v2: punctuation ON, case OFF ---
+      var pwd2_noCase = seek_password_v2(bytes2, 16, 1, -1);
+      assert("v2 punct+no-case: length 16", pwd2_noCase.length, 16);
+      assert("v2 punct+no-case: no uppercase", /[A-Z]/.test(pwd2_noCase), false);
+      assert("v2 punct+no-case: has digit", /[0-9]/.test(pwd2_noCase), true);
+      assert("v2 punct+no-case: has punctuation", /[~!@#$%^&*()\-_=+]/.test(pwd2_noCase), true);
+
+      // --- Determinism across option combos ---
+      assert("v1 no-punct determinism", pwd1_noPunct === seek_password(hex_password("test","qq"), 16, -1, 1), true);
+      var bytes2c = await hex_password_v2("test", "qq");
+      assert("v2 no-case determinism", pwd2_noCase === seek_password_v2(bytes2c, 16, 1, -1), true);
+
+      // --- v2: various lengths with no-punct ---
+      for (var len = 10; len <= 20; len++) {
+        var p = seek_password_v2(bytes2, len, -1, 1);
+        assert("v2 no-punct length " + len, p.length, len);
+      }
+
+      // --- v2: various lengths with no-case ---
+      for (var len = 10; len <= 20; len++) {
+        var p = seek_password_v2(bytes2, len, 1, -1);
+        assert("v2 no-case length " + len, p.length, len);
+      }
+
+      // ========== Passphrase Mode Tests ==========
+      section('Passphrase Mode (v2)');
+
+      var ppBytes = await hex_password_v2("test", "qq");
+
+      // Determinism
+      var pp1 = seek_passphrase_v2(ppBytes, 5, "-");
+      var ppBytes2 = await hex_password_v2("test", "qq");
+      var pp2 = seek_passphrase_v2(ppBytes2, 5, "-");
+      assert("passphrase determinism", pp1 === pp2, true);
+
+      // Word count
+      var ppWords = pp1.split("-");
+      assert("passphrase has 5 words", ppWords.length, 5);
+
+      // Different word counts
+      for (var wc = 4; wc <= 8; wc++) {
+        var pp = seek_passphrase_v2(ppBytes, wc, "-");
+        assert("passphrase " + wc + " words", pp.split("-").length, wc);
+      }
+
+      // Different separator
+      var ppDot = seek_passphrase_v2(ppBytes, 5, ".");
+      assert("passphrase dot separator", ppDot.split(".").length, 5);
+
+      // All words from wordlist
+      var allInList = ppWords.every(function(w) { return WORDLIST_EN.indexOf(w) !== -1; });
+      assert("all words from wordlist", allInList, true);
+
+      // Different inputs produce different passphrases
+      var ppDiffBytes = await hex_password_v2("test", "wechat");
+      var ppDiff = seek_passphrase_v2(ppDiffBytes, 5, "-");
+      assert("different input = different passphrase", pp1 !== ppDiff, true);
+
+      // Passphrase vs password are different outputs
+      assert("passphrase != password from same key", pp1 !== pwd2, true);
+
+      // ========== Cross-version Tests ==========
+      section('Cross-version');
+
+      assert("v1 and v2 produce different outputs (different algorithms)", pwd1 !== pwd2, true);
+
+      // ========== Summary ==========
+      var summary = document.createElement('h2');
+      summary.textContent = 'Results: ' + passed + ' passed, ' + failed + ' failed';
+      summary.className = failed > 0 ? 'fail' : 'pass';
+      results.insertBefore(summary, results.firstChild);
+    })();
+  </script>
+</body>
+</html>

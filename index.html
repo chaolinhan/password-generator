@@ -1,183 +1,251 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN" data-bs-theme="light">
 
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>密码生成工具</title>
   <link rel="shortcut icon" href="favicon.ico" />
-  <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" media="screen,projection" />
-  <link type="text/css" rel="stylesheet" href="css/style.min.css" media="screen,projection" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#f5f5f7" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="密码生成" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/style.min.css" />
+  <script>
+    (function () {
+      var saved = localStorage.getItem('theme');
+      var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.content = theme === 'dark' ? '#000000' : '#f5f5f7';
+      var savedLang = localStorage.getItem('lang');
+      if (savedLang) {
+        document.documentElement.lang = savedLang === 'zh' ? 'zh-CN' : 'en';
+      }
+    })();
+  </script>
 </head>
 
 <body>
-  <div class="container mt-5">
+  <div class="container">
     <div class="row justify-content-center">
-      <div class="input-field col-12 col-sm-12 col-md-8 col-lg-6">
-        <div class="alert alert-warning" role="alert">
-          说明
-          <ol>
-            <li>密码计算全部在本地进行</li>
-            <li>记忆密码复杂一点（固定）</li>
-            <li>区分代码按一定规则：比如QQ密码区分代码为qq</li>
-          </ol>
-        </div>
-        <form>
-          <!--记忆密码-->
-          <div class="input-group mb-2 mr-sm-2">
-            <div class="input-group-prepend">
-              <span class="input-group-text">🔑</span>
-              <div class="input-group-text">记忆密码</div>
-            </div>
-            <input type="password" class="form-control" id="pwd" placeholder="Memory Password" value=""/>
-            <div class="input-group-prepend">
-              <span class="input-group-text" onclick="change_show_status('pwd')"
-                onmouseover="this.style.cursor='pointer'">显示</span>
-            </div>
+      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+        <div class="card-container">
+
+          <!-- 页头 -->
+          <div class="app-header">
+            <h1 data-i18n="page.title">密码生成工具</h1>
+            <p class="subtitle" data-i18n="page.subtitle">确定性密码派生 · 本地计算</p>
+            <button type="button" class="btn-lang-toggle" id="btn-lang-toggle">
+              <span data-i18n="lang.toggle">EN</span>
+            </button>
+            <button type="button" class="btn-theme-toggle" id="btn-theme-toggle"
+              data-i18n-aria="aria.toggleTheme" aria-label="切换深色/浅色主题">
+              <i class="bi bi-circle-half" aria-hidden="true"></i>
+            </button>
           </div>
 
-          <!--区分代码-->
-          <div class="input-group mb-2 mr-sm-2">
-            <div class="input-group-prepend">
-              <div class="input-group-text">🏷️</div>
-              <div class="input-group-text">区分代码</div>
-            </div>
-            <input type="text" class="form-control" id="key" placeholder="Distinguish Code" value="" />
+          <!-- 隐私声明 Banner -->
+          <div class="privacy-banner mb-3">
+            <i class="bi bi-shield-lock" aria-hidden="true"></i>
+            <span data-i18n="privacy.banner">所有计算在本地完成，不传输数据、无网络请求、不追踪任何信息</span>
           </div>
 
-          <!--密码长度-->
-          <div class="input-group mb-3">
-            <div class="input-group-prepend">
-              <label class="input-group-text" for="pwd_length">📏</label>
-              <label class="input-group-text" for="pwd_length">密码长度</label>
+          <form>
+            <!-- 记忆密码 -->
+            <div class="form-floating mb-3 position-relative">
+              <input type="password" class="form-control" id="pwd"
+                data-i18n-placeholder="input.masterPassword" placeholder="记忆密码"
+                data-i18n-aria="input.masterPassword" aria-label="记忆密码" autocomplete="off" />
+              <label for="pwd" data-i18n="input.masterPassword">记忆密码</label>
+              <button type="button" class="btn-eye" id="btn-toggle-pwd"
+                data-i18n-aria="aria.showPassword" aria-label="显示密码">
+                <i class="bi bi-eye" aria-hidden="true"></i>
+              </button>
+              <div class="invalid-feedback" data-i18n="input.masterPassword.error">请输入记忆密码</div>
             </div>
-            <select class="custom-select" id="pwd_length">
-              <option value="10">10 位</option>
-              <option value="11">11 位</option>
-              <option value="12">12 位</option>
-              <option value="13">13 位</option>
-              <option value="14">14 位</option>
-              <option value="15">15 位</option>
-              <option value="16" selected>16 位</option>
-              <option value="17">17 位</option>
-              <option value="18">18 位</option>
-              <option value="19">19 位</option>
-              <option value="20">20 位</option>
-            </select>
-          </div>
 
-          <!-- 选项 -->
-          <div class="input-group mb-3">
-            <select class="custom-select" id="rule_of_punctuation">
-              <option value="1" selected>使用标点</option>
-              <option value="-1">禁用标点</option>
-            </select>
-            <div class="input-group-prepend">
-              <label class="input-group-text">选项</label>
+            <!-- 区分代码 -->
+            <div class="service-code-wrapper position-relative mb-3">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="key"
+                  data-i18n-placeholder="input.serviceCode" placeholder="区分代码"
+                  data-i18n-aria="input.serviceCode" aria-label="区分代码" autocomplete="off" />
+                <label for="key" data-i18n="input.serviceCode">区分代码</label>
+                <div class="invalid-feedback" data-i18n="input.serviceCode.error">请输入区分代码</div>
+              </div>
+              <div class="service-code-dropdown" id="service-code-dropdown"></div>
             </div>
-            <select class="custom-select" id="rule_of_letter">
-              <option value="1" selected>字母区分大小写</option>
-              <option value="-1">字母全小写</option>
-            </select>
-          </div>
 
-          <!-- 复制密码 -->
-          <div class="form-group">
-            <div class="input-group mb-3">
-              <input type="text" class="form-control" id="code" placeholder="Encrypted Password" value="" readonly />
-              <div class="input-group-append">
-                <button class="btn btn-secondary" type="button" id="btn_copy" data-clipboard-target="#code">
-                  复制Copy
-                </button>
+            <!-- 高级选项 -->
+            <div class="mb-4">
+              <button class="advanced-toggle" type="button"
+                data-bs-toggle="collapse" data-bs-target="#advancedOptions"
+                aria-expanded="false" aria-controls="advancedOptions">
+                <span data-i18n="options.toggle">选项</span>
+                <i class="bi bi-chevron-down advanced-chevron" aria-hidden="true"></i>
+              </button>
+              <div class="collapse" id="advancedOptions">
+                <div class="advanced-panel">
+                  <!-- 输出模式 -->
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <span class="option-label" data-i18n="options.mode">输出模式</span>
+                    </div>
+                    <div class="btn-group btn-group-sm w-100" role="group">
+                      <input type="radio" class="btn-check" name="output_mode" id="mode_password" value="password" checked />
+                      <label class="btn btn-outline-secondary" for="mode_password" data-i18n="options.modePassword">密码</label>
+                      <input type="radio" class="btn-check" name="output_mode" id="mode_passphrase" value="passphrase" />
+                      <label class="btn btn-outline-secondary" for="mode_passphrase" data-i18n="options.modePassphrase">短语</label>
+                    </div>
+                  </div>
+
+                  <!-- 短语选项 (仅短语模式显示) -->
+                  <div id="passphraseOptions" style="display:none;">
+                    <div class="mb-3">
+                      <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="option-label" data-i18n="options.wordCount">词数</span>
+                        <span class="option-value" id="word_count_display">5</span>
+                      </div>
+                      <input type="range" class="form-range" id="word_count"
+                        min="4" max="8" value="5"
+                        data-i18n-aria="options.wordCount" aria-label="词数" />
+                    </div>
+                    <div class="form-floating">
+                      <select class="form-select" id="separator"
+                        data-i18n-aria="options.separator" aria-label="分隔符">
+                        <option value="-" selected>-</option>
+                        <option value=".">.</option>
+                        <option value=" ">&nbsp;</option>
+                        <option value="_">_</option>
+                      </select>
+                      <label for="separator" data-i18n="options.separator">分隔符</label>
+                    </div>
+                    <div class="form-hint mt-2" data-i18n="options.wordlistNote">词库：BIP39 英语词表（2048 词）</div>
+                  </div>
+
+                  <!-- 密码选项 (仅密码模式显示) -->
+                  <div id="passwordOptions">
+                  <!-- 密码长度 slider -->
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <span class="option-label" data-i18n="options.length">密码长度</span>
+                      <span class="option-value" id="pwd_length_display">16</span>
+                    </div>
+                    <input type="range" class="form-range" id="pwd_length"
+                      min="10" max="20" value="16"
+                      data-i18n-aria="options.length" aria-label="密码长度" />
+                  </div>
+
+                  <!-- Toggle switches -->
+                  <div class="d-flex flex-column gap-2">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="rule_of_punctuation" checked />
+                      <label class="form-check-label" for="rule_of_punctuation"
+                        data-i18n="options.punctuation">使用标点符号</label>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="rule_of_letter" checked />
+                      <label class="form-check-label" for="rule_of_letter"
+                        data-i18n="options.caseSensitive">区分大小写</label>
+                    </div>
+                  </div>
+
+                  <!-- 算法版本 -->
+                  <div class="form-floating mt-3">
+                    <select class="form-select" id="algorithm_version"
+                      data-i18n-aria="options.algorithm" aria-label="算法版本">
+                      <option value="2" selected data-i18n="options.v2">v2（推荐）</option>
+                      <option value="1" data-i18n="options.v1">v1（旧版兼容）</option>
+                    </select>
+                    <label for="algorithm_version" data-i18n="options.algorithm">算法版本</label>
+                  </div>
+                  <div class="form-hint mt-1" data-i18n="options.hint">v2 使用 PBKDF2 增强安全性；v1 兼容已有密码</div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="progress">
-              <div class="progress-bar" id="quality_progress" role="progressbar" style="width: 0%"></div>
-            </div>
-          </div>
 
-          <div class="form-group">
-            <div class="row justify-content-center">
-              <button class="btn btn-primary" type="button" id="btn_gencode">
-                生成Generate
+            <!-- 密码输出 -->
+            <div class="mb-3">
+              <div class="password-display" id="password-display" tabindex="0"
+                data-i18n-aria="password.displayLabel" aria-label="生成的密码，点击复制">
+                <div class="password-chars" id="password-chars">
+                  <span class="password-placeholder" data-i18n="password.placeholder">点击下方按钮生成密码</span>
+                </div>
+                <button class="btn-copy-inline" id="btn_copy" type="button"
+                  data-i18n-aria="password.copyLabel" aria-label="复制密码">
+                  <i class="bi bi-clipboard" aria-hidden="true"></i>
+                </button>
+              </div>
+              <input type="hidden" id="code" value="" />
+
+              <!-- 分段强度条 -->
+              <div class="strength-meter mt-2" id="strength-meter"
+                data-i18n-aria="password.strengthLabel" aria-label="密码强度"
+                data-strength="0">
+                <div class="strength-segment" data-level="1"></div>
+                <div class="strength-segment" data-level="2"></div>
+                <div class="strength-segment" data-level="3"></div>
+                <div class="strength-segment" data-level="4"></div>
+              </div>
+              <div class="strength-label" id="strength-text"></div>
+            </div>
+
+            <!-- 生成按钮 -->
+            <div class="d-grid">
+              <button class="btn btn-primary btn-generate" type="button" id="btn_gencode"
+                data-i18n="password.generate">
+                生成密码
               </button>
             </div>
+
+            <!-- 无障碍：错误播报区域 -->
+            <div id="form-errors" class="visually-hidden" aria-live="assertive" aria-atomic="true"></div>
+          </form>
+
+          <!-- 使用说明 -->
+          <details class="info-details mt-4">
+            <summary data-i18n="instructions.title">使用说明</summary>
+            <ol>
+              <li data-i18n="instructions.1">基于密钥派生函数（v2: PBKDF2-SHA512, 200k 迭代），所有计算在浏览器本地完成</li>
+              <li data-i18n="instructions.2">记忆密码作为主密钥，应具备足够熵值，在所有服务间保持一致</li>
+              <li><span data-i18n="instructions.3">区分代码作为盐值，为每个服务设唯一标识，如：</span><code>github</code></li>
+            </ol>
+          </details>
+
+          <!-- 数据导入导出 -->
+          <div class="data-portability mt-3">
+            <div class="d-flex gap-2 justify-content-center">
+              <button type="button" class="btn-portability" id="btn-export">
+                <i class="bi bi-download" aria-hidden="true"></i>
+                <span data-i18n="data.export">导出</span>
+              </button>
+              <button type="button" class="btn-portability" id="btn-import">
+                <i class="bi bi-upload" aria-hidden="true"></i>
+                <span data-i18n="data.import">导入</span>
+              </button>
+              <input type="file" id="import-file-input" accept=".json" class="d-none" />
+            </div>
+            <div class="import-feedback" id="import-feedback"></div>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
-  <script type="text/javascript" src="js/clipboard.min.js"></script>
-  <script type="text/javascript" src="js/sha512.min.js"></script>
-  <script type="text/javascript" src="js/PasswordQualityCalculator.min.js"></script>
-  <script type="text/javascript" src="src/seek_password.min.js"></script>
-  <script type="text/javascript">
-    var clipboard = new ClipboardJS("#btn_copy");
-    document.getElementById("btn_gencode").onclick = function () {
-      // 输入校验
-      var inputPwd = document.getElementById("pwd");
-      var inputKey = document.getElementById("key");
-      if(inputPwd.value.length == 0){
-        inputPwd.setAttribute("placeholder", "必须输入记忆密码");
-        inputPwd.className += " Red";
-      }
-      if(inputKey.value.length == 0){
-        inputKey.setAttribute("placeholder", "必须输入区分代码");
-        inputKey.className += " Red";
-      }
 
-      var sk_pwd = generate_password();
-      if (sk_pwd) {
-        document.getElementById("code").value = sk_pwd;
-      }
-      //密码强度
-      const quality = PasswordQualityCalculator(
-        document.getElementById("code").value
-      );
-      //清除记录
-      var quality_progress = document.getElementById("quality_progress");
-      quality_progress.className = "progress-bar";
-      if (quality > 0 && quality <= 64) {
-        quality_progress.classList.add("bg-danger");
-        quality_progress.style.setProperty(
-          "width",
-          (quality / 120) * 100 + "%"
-        );
-        quality_progress.innerText = "极弱";
-      } else if (quality > 64 && quality <= 80) {
-        quality_progress.classList.add("bg-warning");
-        quality_progress.style.setProperty(
-          "width",
-          (quality / 120) * 100 + "%"
-        );
-        quality_progress.innerText = "弱";
-      } else if (quality > 80 && quality <= 112) {
-        quality_progress.style.setProperty(
-          "width",
-          (quality / 120) * 100 + "%"
-        );
-        quality_progress.innerText = "强";
-      } else if (quality > 112) {
-        quality_progress.classList.add("bg-success");
-        quality_progress.style.setProperty(
-          "width",
-          (quality / 120) * 100 + "%"
-        );
-        quality_progress.innerText = "极强";
-      }
-    };
-
-    //显示&隐藏密码
-    function change_show_status(input_id) {
-      var input = document.getElementById("pwd");
-      if (input.getAttribute("type") == "password") {
-        input.setAttribute("type", "text");
-
-      } else {
-        input.setAttribute("type", "password");
-      }
-    }
-  </script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/sha512.min.js"></script>
+  <script src="js/PasswordQualityCalculator.min.js"></script>
+  <script src="src/wordlist.min.js"></script>
+  <script src="src/seek_password.min.js"></script>
+  <script src="src/i18n.min.js"></script>
+  <script src="src/service-codes.min.js"></script>
+  <script src="src/app.min.js"></script>
 </body>
 
 </html>

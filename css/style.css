@@ -1,29 +1,593 @@
-.Red::-webkit-input-placeholder {
-    color: #dd6f6f;
-    /* WebKit, Blink, Edge */
+/* === Theme Variables === */
+[data-bs-theme="light"] {
+  --bg-primary: #f5f5f7;
+  --bg-card: #ffffff;
+  --text-primary: #1d1d1f;
+  --text-secondary: #86868b;
+  --accent: #0071e3;
+  --accent-hover: #0077ed;
+  --border: #d2d2d7;
+  --border-light: #e8e8ed;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 0 1px rgba(0, 0, 0, 0.08);
+  --success: #34c759;
+  --warning: #ff9f0a;
+  --danger: #ff3b30;
+  --char-symbol: #af52de;
+  --theme-color: #f5f5f7;
 }
 
-.Red:-moz-placeholder {
-    color: #dd6f6f;
-    /* Mozilla Firefox 4 to 18 */
+[data-bs-theme="dark"] {
+  --bg-primary: #000000;
+  --bg-card: #1c1c1e;
+  --text-primary: #f5f5f7;
+  --text-secondary: #86868b;
+  --accent: #2997ff;
+  --accent-hover: #40a9ff;
+  --border: #38383a;
+  --border-light: #2c2c2e;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 1px rgba(0, 0, 0, 0.5);
+  --success: #30d158;
+  --warning: #ff9f0a;
+  --danger: #ff453a;
+  --char-symbol: #bf5af2;
+  --theme-color: #000000;
 }
 
-.Red::-moz-placeholder {
-    color: #dd6f6f;
-    /* Mozilla Firefox 19+ */
+/* === Base === */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+               'Helvetica Neue', Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 6vh;
+  transition: background-color 0.3s;
+  -webkit-font-smoothing: antialiased;
 }
 
-.Red::-ms-input-placeholder {
-    color: #dd6f6f;
-    /* Microsoft Edge */
+/* === Card === */
+.card-container {
+  background-color: var(--bg-card);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
-.Red:-ms-input-placeholder {
-    color: #dd6f6f;
-    /* Internet Explorer 10-11 */
+/* === Header === */
+.app-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
 }
 
-.Red::placeholder {
-    color: #dd6f6f;
-    /* Most modern browsers support this now. */
+.app-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.app-header .subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0;
+  letter-spacing: 0.02em;
+}
+
+/* === Theme Toggle === */
+.btn-theme-toggle {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 1.15rem;
+  border-radius: 6px;
+  transition: color 0.2s;
+}
+
+.btn-theme-toggle:hover {
+  color: var(--text-primary);
+}
+
+/* === Language Toggle === */
+.btn-lang-toggle {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 6px;
+  transition: color 0.2s;
+}
+
+.btn-lang-toggle:hover {
+  color: var(--text-primary);
+}
+
+/* === Eye Toggle === */
+.btn-eye {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  z-index: 5;
+  font-size: 1rem;
+  transition: color 0.2s;
+}
+
+.btn-eye:hover {
+  color: var(--accent);
+}
+
+/* Floating label — add padding-right so text doesn't overlap eye button */
+.form-floating:has(.btn-eye) .form-control {
+  padding-right: 2.5rem;
+}
+
+/* === Advanced Options === */
+.advanced-toggle {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s;
+}
+
+.advanced-toggle:hover {
+  color: var(--text-primary);
+}
+
+.advanced-chevron {
+  font-size: 0.7rem;
+  transition: transform 0.2s;
+}
+
+.advanced-toggle[aria-expanded="true"] .advanced-chevron {
+  transform: rotate(180deg);
+}
+
+.advanced-panel {
+  padding: 1.25rem;
+  margin-top: 0.75rem;
+  border-radius: 12px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-light);
+}
+
+.option-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.option-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 2ch;
+  text-align: right;
+}
+
+/* === Output Mode Toggle === */
+.btn-group .btn-outline-secondary {
+  color: var(--text-secondary);
+  border-color: var(--border);
+  font-size: 0.85rem;
+  --bs-btn-bg: transparent;
+  --bs-btn-hover-bg: var(--bg-primary);
+  --bs-btn-hover-color: var(--text-primary);
+  --bs-btn-hover-border-color: var(--border);
+  --bs-btn-active-bg: var(--accent);
+  --bs-btn-active-border-color: var(--accent);
+  --bs-btn-active-color: #fff;
+}
+
+.btn-check:checked + .btn-outline-secondary {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+#passphraseOptions {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.form-hint {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* === Custom Range Slider === */
+.form-range::-webkit-slider-thumb {
+  background-color: var(--accent);
+}
+
+.form-range::-moz-range-thumb {
+  background-color: var(--accent);
+}
+
+.form-range::-webkit-slider-runnable-track {
+  background-color: var(--border);
+}
+
+/* === Password Display === */
+.password-display {
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  min-height: 3.5rem;
+}
+
+.password-display:hover {
+  border-color: var(--accent);
+}
+
+.password-chars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  font-family: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+  font-size: 1.25rem;
+  letter-spacing: 1.5px;
+  line-height: 1.6;
+}
+
+.password-placeholder {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-family: inherit;
+  letter-spacing: normal;
+}
+
+/* Character type coloring */
+.char-lower {
+  color: var(--text-primary);
+}
+
+.char-upper {
+  color: var(--accent);
+}
+
+.char-digit {
+  color: var(--warning);
+}
+
+.char-symbol {
+  color: var(--char-symbol);
+}
+
+/* Char fade-in animation */
+.password-chars .char {
+  opacity: 0;
+  animation: charIn 0.25s ease forwards;
+}
+
+@keyframes charIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Copy button */
+.btn-copy-inline {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  padding: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.btn-copy-inline:hover {
+  color: var(--accent);
+}
+
+.btn-copy-inline.copy-success {
+  color: var(--success) !important;
+}
+
+.btn-copy-inline.copy-fail {
+  color: var(--danger) !important;
+}
+
+/* === Segmented Strength Meter === */
+.strength-meter {
+  display: flex;
+  gap: 4px;
+  height: 4px;
+}
+
+.strength-segment {
+  flex: 1;
+  border-radius: 2px;
+  background-color: var(--border-light);
+  transition: background-color 0.3s;
+}
+
+.strength-meter[data-strength="1"] [data-level="1"] {
+  background-color: var(--danger);
+}
+
+.strength-meter[data-strength="2"] [data-level="1"],
+.strength-meter[data-strength="2"] [data-level="2"] {
+  background-color: var(--warning);
+}
+
+.strength-meter[data-strength="3"] [data-level="1"],
+.strength-meter[data-strength="3"] [data-level="2"],
+.strength-meter[data-strength="3"] [data-level="3"] {
+  background-color: var(--accent);
+}
+
+.strength-meter[data-strength="4"] .strength-segment {
+  background-color: var(--success);
+}
+
+.strength-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.35rem;
+  text-align: right;
+  min-height: 1em;
+}
+
+/* === Generate Button === */
+.btn-generate {
+  background-color: var(--accent);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  transition: background-color 0.15s, transform 0.1s;
+}
+
+.btn-generate:hover {
+  background-color: var(--accent-hover);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.btn-generate:active {
+  transform: translateY(0);
+}
+
+/* === Privacy Banner === */
+.privacy-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(52, 199, 89, 0.08), rgba(0, 113, 227, 0.06));
+  border: 1px solid rgba(52, 199, 89, 0.2);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+[data-bs-theme="dark"] .privacy-banner {
+  background: linear-gradient(135deg, rgba(48, 209, 88, 0.1), rgba(41, 151, 255, 0.07));
+  border-color: rgba(48, 209, 88, 0.25);
+}
+
+.privacy-banner i {
+  color: var(--success);
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+/* === Info Details (bottom) === */
+.info-details {
+  text-align: center;
+}
+
+.info-details summary {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline;
+  list-style: none;
+}
+
+.info-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.info-details summary::marker {
+  content: '';
+}
+
+.info-details summary:hover {
+  color: var(--text-primary);
+}
+
+.info-details ol {
+  text-align: left;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.info-details li {
+  margin-bottom: 0.3rem;
+}
+
+.info-details code {
+  font-size: 0.85em;
+  color: var(--accent);
+}
+
+/* === Validation === */
+.invalid-feedback {
+  font-size: 0.8rem;
+}
+
+/* === Focus === */
+.form-control:focus-visible,
+.form-select:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* === Service Code Dropdown === */
+.service-code-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+}
+
+.service-code-dropdown.show {
+  display: block;
+}
+
+.service-code-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.15s;
+}
+
+.service-code-item:hover {
+  background-color: var(--bg-primary);
+}
+
+.service-code-item .code-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.service-code-item .btn-delete-code {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  cursor: pointer;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.service-code-item .btn-delete-code:hover {
+  color: var(--danger);
+}
+
+.service-code-item .settings-badge {
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  margin-left: 0.35rem;
+}
+
+/* === Data Portability === */
+.data-portability {
+  text-align: center;
+}
+
+.btn-portability {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.btn-portability:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.import-feedback {
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.import-feedback.show {
+  opacity: 1;
+}
+
+.import-feedback.success {
+  color: var(--success);
+}
+
+.import-feedback.error {
+  color: var(--danger);
+}
+
+/* === Responsive === */
+@media (max-width: 576px) {
+  .card-container {
+    padding: 1.5rem;
+    border-radius: 0;
+    box-shadow: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  body {
+    padding-top: 0;
+  }
 }
