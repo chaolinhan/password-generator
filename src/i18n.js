@@ -1,14 +1,24 @@
 var I18N = {
   zh: {
-    'page.title': '密码生成工具',
-    'page.subtitle': '确定性密码派生 · 本地计算',
+    'page.title': '密码生成器',
+    'page.metaDescription': '一款本地运行、可离线使用的确定性密码生成工具。',
+    'page.eyebrow': '本地密码工具',
+    'page.heroLine1': '记住一个，',
+    'page.heroLine2': '生成所有。',
+    'page.description': '用记忆密码和服务代码，在本地生成可重复、互不相同的密码。',
 
+    'form.title': '生成密码',
     'input.masterPassword': '记忆密码',
-    'input.serviceCode': '区分代码',
+    'input.masterPassword.hint': '你唯一需要记住的密码',
+    'input.masterPassword.placeholder': '输入记忆密码',
+    'input.serviceCode': '服务代码',
+    'input.serviceCode.hint': '为每个服务使用唯一名称',
+    'input.serviceCode.placeholder': '例如 github',
     'input.masterPassword.error': '请输入记忆密码',
-    'input.serviceCode.error': '请输入区分代码',
+    'input.serviceCode.error': '请输入服务代码',
 
-    'options.toggle': '选项',
+    'options.toggle': '生成选项',
+    'options.summary': '默认使用推荐的安全设置',
     'options.length': '密码长度',
     'options.punctuation': '使用标点符号',
     'options.caseSensitive': '区分大小写',
@@ -20,102 +30,144 @@ var I18N = {
     'options.modePassphrase': '短语',
     'options.wordCount': '词数',
     'options.separator': '分隔符',
-    'options.wordlistNote': '词库：BIP39 英语词表（2048 词）',
-    'options.hint': 'v2 使用 PBKDF2 增强安全性；v1 兼容已有密码',
+    'options.wordlistNote': 'BIP39 英语词表 · 2048 词',
+    'options.hint': 'v2 更安全；v1 用于找回旧密码',
 
-    'password.placeholder': '点击下方按钮生成密码',
+    'password.output': '生成结果',
+    'password.placeholder': '结果会显示在这里',
     'password.generate': '生成密码',
-    'password.generating': '生成中...',
+    'password.generating': '正在安全生成…',
     'password.copyLabel': '复制密码',
-    'password.displayLabel': '生成的密码，点击复制',
+    'password.displayLabel': '生成的密码，按下可复制',
     'password.strengthLabel': '密码强度',
 
-    'strength.veryWeak': '极弱',
-    'strength.weak': '弱',
-    'strength.strong': '强',
-    'strength.veryStrong': '极强',
+    'strength.veryWeak': '强度 · 极弱',
+    'strength.weak': '强度 · 较弱',
+    'strength.strong': '强度 · 良好',
+    'strength.veryStrong': '强度 · 很强',
 
-    'aria.toggleTheme': '切换深色/浅色主题',
+    'trust.localTitle': '只在此设备计算',
+    'trust.localText': '密码不会离开浏览器',
+    'trust.offlineTitle': '安装后可离线使用',
+    'trust.offlineText': '手机、平板和电脑都适用',
+    'trust.label': '产品特点',
+    'privacy.banner': '本地计算，不传输、不追踪、不保存记忆密码',
+    'status.online': '已就绪 · 支持离线',
+    'status.offline': '当前离线 · 功能仍可使用',
+
+    'install.action': '安装到此设备',
+    'install.iosHint': '在 Safari 的分享菜单中选择“添加到主屏幕”。',
+    'install.success': '安装完成，现在可以像原生应用一样打开。',
+    'install.unavailable': '可通过浏览器菜单将此应用安装到设备。',
+
+    'aria.skipToForm': '跳到生成器',
+    'aria.toggleTheme': '切换深色或浅色主题',
     'aria.showPassword': '显示密码',
     'aria.hidePassword': '隐藏密码',
 
-    'sw.updatePrompt': '发现新版本，是否刷新页面？',
-
+    'sw.updatePrompt': '新版本已准备好，立即刷新？',
     'error.join': '，',
+    'error.generate': '生成失败，请重试',
 
-    'instructions.title': '使用说明',
-    'instructions.1': '基于密钥派生函数（v2: PBKDF2-SHA512, 200k 迭代），所有计算在浏览器本地完成',
-    'instructions.2': '记忆密码作为主密钥，应具备足够熵值，在所有服务间保持一致',
-    'instructions.3': '区分代码作为盐值，为每个服务设唯一标识，如：',
+    'instructions.title': '如何使用',
+    'instructions.1': '记忆密码是你的主密钥，只需记住它',
+    'instructions.2': '为每个服务设置唯一代码，例如 github',
+    'instructions.3': '同样的输入总会生成同样的结果',
 
     'serviceCode.delete': '删除',
+    'serviceCode.use': '使用服务代码 {code}',
+    'serviceCode.history': '服务代码历史',
 
-    'privacy.banner': '所有计算在本地完成，不传输数据、无网络请求、不追踪任何信息',
-
-    'data.export': '导出',
+    'data.export': '导出服务代码',
     'data.import': '导入',
-    'data.importSuccess': '成功导入 {count} 个服务代码',
-    'data.importError': '导入失败：文件格式不正确',
+    'data.importSuccess': '已导入 {count} 个服务代码',
+    'data.importError': '导入失败，文件格式不正确',
 
     'lang.toggle': 'EN'
   },
   en: {
     'page.title': 'Password Generator',
-    'page.subtitle': 'Deterministic Derivation · Local Computation',
+    'page.metaDescription': 'A deterministic password generator that runs locally and works offline.',
+    'page.eyebrow': 'Local password tool',
+    'page.heroLine1': 'Remember one.',
+    'page.heroLine2': 'Generate them all.',
+    'page.description': 'Combine one master password with a service code to create unique, repeatable passwords locally.',
 
-    'input.masterPassword': 'Master Password',
-    'input.serviceCode': 'Service Code',
-    'input.masterPassword.error': 'Please enter master password',
-    'input.serviceCode.error': 'Please enter service code',
+    'form.title': 'Generate password',
+    'input.masterPassword': 'Master password',
+    'input.masterPassword.hint': 'The only password you need to remember',
+    'input.masterPassword.placeholder': 'Enter your master password',
+    'input.serviceCode': 'Service code',
+    'input.serviceCode.hint': 'Use a unique name for each service',
+    'input.serviceCode.placeholder': 'For example, github',
+    'input.masterPassword.error': 'Enter your master password',
+    'input.serviceCode.error': 'Enter a service code',
 
-    'options.toggle': 'Options',
-    'options.length': 'Password Length',
-    'options.punctuation': 'Include Punctuation',
-    'options.caseSensitive': 'Mixed Case',
-    'options.algorithm': 'Algorithm Version',
+    'options.toggle': 'Generation options',
+    'options.summary': 'Recommended secure settings are selected',
+    'options.length': 'Password length',
+    'options.punctuation': 'Include punctuation',
+    'options.caseSensitive': 'Mixed case',
+    'options.algorithm': 'Algorithm version',
     'options.v2': 'v2 (Recommended)',
     'options.v1': 'v1 (Legacy)',
-    'options.mode': 'Output Mode',
+    'options.mode': 'Output mode',
     'options.modePassword': 'Password',
     'options.modePassphrase': 'Passphrase',
-    'options.wordCount': 'Word Count',
+    'options.wordCount': 'Word count',
     'options.separator': 'Separator',
-    'options.wordlistNote': 'Wordlist: BIP39 English (2048 words)',
-    'options.hint': 'v2 uses PBKDF2 for enhanced security; v1 for backward compatibility',
+    'options.wordlistNote': 'BIP39 English wordlist · 2,048 words',
+    'options.hint': 'v2 is more secure; use v1 to recover legacy passwords',
 
-    'password.placeholder': 'Click the button below to generate',
-    'password.generate': 'Generate Password',
-    'password.generating': 'Generating...',
+    'password.output': 'Generated result',
+    'password.placeholder': 'Your result will appear here',
+    'password.generate': 'Generate password',
+    'password.generating': 'Generating securely…',
     'password.copyLabel': 'Copy password',
-    'password.displayLabel': 'Generated password, click to copy',
+    'password.displayLabel': 'Generated password, press to copy',
     'password.strengthLabel': 'Password strength',
 
-    'strength.veryWeak': 'Very Weak',
-    'strength.weak': 'Weak',
-    'strength.strong': 'Strong',
-    'strength.veryStrong': 'Very Strong',
+    'strength.veryWeak': 'Strength · Very weak',
+    'strength.weak': 'Strength · Weak',
+    'strength.strong': 'Strength · Good',
+    'strength.veryStrong': 'Strength · Strong',
 
-    'aria.toggleTheme': 'Toggle dark/light theme',
+    'trust.localTitle': 'Computed on this device',
+    'trust.localText': 'Passwords never leave your browser',
+    'trust.offlineTitle': 'Works offline when installed',
+    'trust.offlineText': 'Made for phone, tablet, and desktop',
+    'trust.label': 'Product features',
+    'privacy.banner': 'Local computation — no transmission, tracking, or saved master password',
+    'status.online': 'Ready · Offline capable',
+    'status.offline': 'You are offline · The app still works',
+
+    'install.action': 'Install on this device',
+    'install.iosHint': 'In Safari, open Share and choose “Add to Home Screen.”',
+    'install.success': 'Installed. You can now open it like a native app.',
+    'install.unavailable': 'Use your browser menu to install this app on your device.',
+
+    'aria.skipToForm': 'Skip to generator',
+    'aria.toggleTheme': 'Toggle dark or light theme',
     'aria.showPassword': 'Show password',
     'aria.hidePassword': 'Hide password',
 
-    'sw.updatePrompt': 'New version available. Refresh the page?',
-
+    'sw.updatePrompt': 'A new version is ready. Refresh now?',
     'error.join': ', ',
+    'error.generate': 'Generation failed. Please try again.',
 
-    'instructions.title': 'Instructions',
-    'instructions.1': 'Uses key derivation (v2: PBKDF2-SHA512, 200k iterations). All computation is local.',
-    'instructions.2': 'Master password serves as the main key. Keep it consistent across all services.',
-    'instructions.3': 'Service code is the salt. Use a unique identifier per service, e.g. ',
+    'instructions.title': 'How it works',
+    'instructions.1': 'Your master password is the one secret you remember',
+    'instructions.2': 'Give each service a unique code, such as github',
+    'instructions.3': 'The same inputs always produce the same result',
 
     'serviceCode.delete': 'Delete',
+    'serviceCode.use': 'Use service code {code}',
+    'serviceCode.history': 'Service code history',
 
-    'privacy.banner': 'All computation is local — no data transmitted, no network requests, no tracking',
-
-    'data.export': 'Export',
+    'data.export': 'Export service codes',
     'data.import': 'Import',
-    'data.importSuccess': 'Successfully imported {count} service codes',
-    'data.importError': 'Import failed: invalid file format',
+    'data.importSuccess': 'Imported {count} service codes',
+    'data.importError': 'Import failed because the file is invalid',
 
     'lang.toggle': '中文'
   }
@@ -124,8 +176,8 @@ var I18N = {
 var currentLang = localStorage.getItem('lang') || 'zh';
 
 function t(key) {
-  var dict = I18N[currentLang] || I18N['zh'];
-  return dict[key] || I18N['zh'][key] || key;
+  var dict = I18N[currentLang] || I18N.zh;
+  return dict[key] || I18N.zh[key] || key;
 }
 
 function setLang(lang) {
@@ -136,17 +188,22 @@ function setLang(lang) {
 }
 
 function translatePage() {
-  var els = document.querySelectorAll('[data-i18n]');
-  for (var i = 0; i < els.length; i++) {
-    els[i].textContent = t(els[i].getAttribute('data-i18n'));
-  }
+  var elements = document.querySelectorAll('[data-i18n]');
   var placeholders = document.querySelectorAll('[data-i18n-placeholder]');
-  for (var i = 0; i < placeholders.length; i++) {
+  var ariaElements = document.querySelectorAll('[data-i18n-aria]');
+  var description = document.querySelector('meta[name="description"]');
+  var i;
+
+  for (i = 0; i < elements.length; i++) {
+    elements[i].textContent = t(elements[i].getAttribute('data-i18n'));
+  }
+  for (i = 0; i < placeholders.length; i++) {
     placeholders[i].placeholder = t(placeholders[i].getAttribute('data-i18n-placeholder'));
   }
-  var ariaEls = document.querySelectorAll('[data-i18n-aria]');
-  for (var i = 0; i < ariaEls.length; i++) {
-    ariaEls[i].setAttribute('aria-label', t(ariaEls[i].getAttribute('data-i18n-aria')));
+  for (i = 0; i < ariaElements.length; i++) {
+    ariaElements[i].setAttribute('aria-label', t(ariaElements[i].getAttribute('data-i18n-aria')));
   }
+
   document.title = t('page.title');
+  if (description) description.content = t('page.metaDescription');
 }

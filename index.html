@@ -3,14 +3,18 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>密码生成工具</title>
-  <link rel="shortcut icon" href="favicon.ico" />
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#f5f5f7" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="一款本地运行、可离线使用的确定性密码生成工具。" />
+  <meta name="theme-color" content="#f1f0e9" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="密码生成" />
+  <meta name="apple-mobile-web-app-title" content="密码生成器" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>密码生成器</title>
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <link rel="stylesheet" href="css/bootstrap.min.css" />
   <link rel="stylesheet" href="css/bootstrap-icons.min.css" />
@@ -18,225 +22,276 @@
   <script>
     (function () {
       var saved = localStorage.getItem('theme');
-      var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      document.documentElement.setAttribute('data-bs-theme', theme);
-      var meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.content = theme === 'dark' ? '#000000' : '#f5f5f7';
+      var theme = saved || 'light';
       var savedLang = localStorage.getItem('lang');
-      if (savedLang) {
-        document.documentElement.lang = savedLang === 'zh' ? 'zh-CN' : 'en';
-      }
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      document.documentElement.lang = savedLang === 'en' ? 'en' : 'zh-CN';
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.content = theme === 'dark' ? '#101714' : '#f1f0e9';
     })();
   </script>
 </head>
 
 <body>
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-        <div class="card-container">
+  <a class="skip-link" href="#generator-form" data-i18n="aria.skipToForm">跳到生成器</a>
 
-          <!-- 页头 -->
-          <div class="app-header">
-            <h1 data-i18n="page.title">密码生成工具</h1>
-            <p class="subtitle" data-i18n="page.subtitle">确定性密码派生 · 本地计算</p>
-            <button type="button" class="btn-lang-toggle" id="btn-lang-toggle">
-              <span data-i18n="lang.toggle">EN</span>
-            </button>
-            <button type="button" class="btn-theme-toggle" id="btn-theme-toggle"
-              data-i18n-aria="aria.toggleTheme" aria-label="切换深色/浅色主题">
-              <i class="bi bi-circle-half" aria-hidden="true"></i>
-            </button>
+  <main class="app-shell" id="main-content">
+    <aside class="identity-panel" aria-labelledby="product-title">
+      <div class="identity-top">
+        <div class="brand-mark" aria-hidden="true">
+          <i class="bi bi-shield-lock"></i>
+        </div>
+        <span class="eyebrow" data-i18n="page.eyebrow">本地密码工具</span>
+      </div>
+
+      <div class="identity-copy">
+        <h1 id="product-title">
+          <span data-i18n="page.heroLine1">记住一个，</span><br />
+          <span data-i18n="page.heroLine2">生成所有。</span>
+        </h1>
+        <p data-i18n="page.description">用记忆密码和服务代码，在本地生成可重复、互不相同的密码。</p>
+      </div>
+
+      <div class="trust-list" data-i18n-aria="trust.label" aria-label="产品特点">
+        <div class="trust-item">
+          <i class="bi bi-device-ssd" aria-hidden="true"></i>
+          <div>
+            <strong data-i18n="trust.localTitle">只在此设备计算</strong>
+            <span data-i18n="trust.localText">密码不会离开浏览器</span>
           </div>
-
-          <!-- 隐私声明 Banner -->
-          <div class="privacy-banner mb-3">
-            <i class="bi bi-shield-lock" aria-hidden="true"></i>
-            <span data-i18n="privacy.banner">所有计算在本地完成，不传输数据、无网络请求、不追踪任何信息</span>
-          </div>
-
-          <form>
-            <!-- 记忆密码 -->
-            <div class="form-floating mb-3 position-relative">
-              <input type="password" class="form-control" id="pwd"
-                data-i18n-placeholder="input.masterPassword" placeholder="记忆密码"
-                data-i18n-aria="input.masterPassword" aria-label="记忆密码" autocomplete="off" />
-              <label for="pwd" data-i18n="input.masterPassword">记忆密码</label>
-              <button type="button" class="btn-eye" id="btn-toggle-pwd"
-                data-i18n-aria="aria.showPassword" aria-label="显示密码">
-                <i class="bi bi-eye" aria-hidden="true"></i>
-              </button>
-              <div class="invalid-feedback" data-i18n="input.masterPassword.error">请输入记忆密码</div>
-            </div>
-
-            <!-- 区分代码 -->
-            <div class="service-code-wrapper position-relative mb-3">
-              <div class="form-floating">
-                <input type="text" class="form-control" id="key"
-                  data-i18n-placeholder="input.serviceCode" placeholder="区分代码"
-                  data-i18n-aria="input.serviceCode" aria-label="区分代码" autocomplete="off" />
-                <label for="key" data-i18n="input.serviceCode">区分代码</label>
-                <div class="invalid-feedback" data-i18n="input.serviceCode.error">请输入区分代码</div>
-              </div>
-              <div class="service-code-dropdown" id="service-code-dropdown"></div>
-            </div>
-
-            <!-- 高级选项 -->
-            <div class="mb-4">
-              <button class="advanced-toggle" type="button"
-                data-bs-toggle="collapse" data-bs-target="#advancedOptions"
-                aria-expanded="false" aria-controls="advancedOptions">
-                <span data-i18n="options.toggle">选项</span>
-                <i class="bi bi-chevron-down advanced-chevron" aria-hidden="true"></i>
-              </button>
-              <div class="collapse" id="advancedOptions">
-                <div class="advanced-panel">
-                  <!-- 输出模式 -->
-                  <div class="mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                      <span class="option-label" data-i18n="options.mode">输出模式</span>
-                    </div>
-                    <div class="btn-group btn-group-sm w-100" role="group">
-                      <input type="radio" class="btn-check" name="output_mode" id="mode_password" value="password" checked />
-                      <label class="btn btn-outline-secondary" for="mode_password" data-i18n="options.modePassword">密码</label>
-                      <input type="radio" class="btn-check" name="output_mode" id="mode_passphrase" value="passphrase" />
-                      <label class="btn btn-outline-secondary" for="mode_passphrase" data-i18n="options.modePassphrase">短语</label>
-                    </div>
-                  </div>
-
-                  <!-- 短语选项 (仅短语模式显示) -->
-                  <div id="passphraseOptions" style="display:none;">
-                    <div class="mb-3">
-                      <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="option-label" data-i18n="options.wordCount">词数</span>
-                        <span class="option-value" id="word_count_display">5</span>
-                      </div>
-                      <input type="range" class="form-range" id="word_count"
-                        min="4" max="8" value="5"
-                        data-i18n-aria="options.wordCount" aria-label="词数" />
-                    </div>
-                    <div class="form-floating">
-                      <select class="form-select" id="separator"
-                        data-i18n-aria="options.separator" aria-label="分隔符">
-                        <option value="-" selected>-</option>
-                        <option value=".">.</option>
-                        <option value=" ">&nbsp;</option>
-                        <option value="_">_</option>
-                      </select>
-                      <label for="separator" data-i18n="options.separator">分隔符</label>
-                    </div>
-                    <div class="form-hint mt-2" data-i18n="options.wordlistNote">词库：BIP39 英语词表（2048 词）</div>
-                  </div>
-
-                  <!-- 密码选项 (仅密码模式显示) -->
-                  <div id="passwordOptions">
-                  <!-- 密码长度 slider -->
-                  <div class="mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                      <span class="option-label" data-i18n="options.length">密码长度</span>
-                      <span class="option-value" id="pwd_length_display">16</span>
-                    </div>
-                    <input type="range" class="form-range" id="pwd_length"
-                      min="10" max="20" value="16"
-                      data-i18n-aria="options.length" aria-label="密码长度" />
-                  </div>
-
-                  <!-- Toggle switches -->
-                  <div class="d-flex flex-column gap-2">
-                    <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" id="rule_of_punctuation" checked />
-                      <label class="form-check-label" for="rule_of_punctuation"
-                        data-i18n="options.punctuation">使用标点符号</label>
-                    </div>
-                    <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" id="rule_of_letter" checked />
-                      <label class="form-check-label" for="rule_of_letter"
-                        data-i18n="options.caseSensitive">区分大小写</label>
-                    </div>
-                  </div>
-
-                  <!-- 算法版本 -->
-                  <div class="form-floating mt-3">
-                    <select class="form-select" id="algorithm_version"
-                      data-i18n-aria="options.algorithm" aria-label="算法版本">
-                      <option value="2" selected data-i18n="options.v2">v2（推荐）</option>
-                      <option value="1" data-i18n="options.v1">v1（旧版兼容）</option>
-                    </select>
-                    <label for="algorithm_version" data-i18n="options.algorithm">算法版本</label>
-                  </div>
-                  <div class="form-hint mt-1" data-i18n="options.hint">v2 使用 PBKDF2 增强安全性；v1 兼容已有密码</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 密码输出 -->
-            <div class="mb-3">
-              <div class="password-display" id="password-display" tabindex="0"
-                data-i18n-aria="password.displayLabel" aria-label="生成的密码，点击复制">
-                <div class="password-chars" id="password-chars">
-                  <span class="password-placeholder" data-i18n="password.placeholder">点击下方按钮生成密码</span>
-                </div>
-                <button class="btn-copy-inline" id="btn_copy" type="button"
-                  data-i18n-aria="password.copyLabel" aria-label="复制密码">
-                  <i class="bi bi-clipboard" aria-hidden="true"></i>
-                </button>
-              </div>
-              <input type="hidden" id="code" value="" />
-
-              <!-- 分段强度条 -->
-              <div class="strength-meter mt-2" id="strength-meter"
-                data-i18n-aria="password.strengthLabel" aria-label="密码强度"
-                data-strength="0">
-                <div class="strength-segment" data-level="1"></div>
-                <div class="strength-segment" data-level="2"></div>
-                <div class="strength-segment" data-level="3"></div>
-                <div class="strength-segment" data-level="4"></div>
-              </div>
-              <div class="strength-label" id="strength-text"></div>
-            </div>
-
-            <!-- 生成按钮 -->
-            <div class="d-grid">
-              <button class="btn btn-primary btn-generate" type="button" id="btn_gencode"
-                data-i18n="password.generate">
-                生成密码
-              </button>
-            </div>
-
-            <!-- 无障碍：错误播报区域 -->
-            <div id="form-errors" class="visually-hidden" aria-live="assertive" aria-atomic="true"></div>
-          </form>
-
-          <!-- 使用说明 -->
-          <details class="info-details mt-4">
-            <summary data-i18n="instructions.title">使用说明</summary>
-            <ol>
-              <li data-i18n="instructions.1">基于密钥派生函数（v2: PBKDF2-SHA512, 200k 迭代），所有计算在浏览器本地完成</li>
-              <li data-i18n="instructions.2">记忆密码作为主密钥，应具备足够熵值，在所有服务间保持一致</li>
-              <li><span data-i18n="instructions.3">区分代码作为盐值，为每个服务设唯一标识，如：</span><code>github</code></li>
-            </ol>
-          </details>
-
-          <!-- 数据导入导出 -->
-          <div class="data-portability mt-3">
-            <div class="d-flex gap-2 justify-content-center">
-              <button type="button" class="btn-portability" id="btn-export">
-                <i class="bi bi-download" aria-hidden="true"></i>
-                <span data-i18n="data.export">导出</span>
-              </button>
-              <button type="button" class="btn-portability" id="btn-import">
-                <i class="bi bi-upload" aria-hidden="true"></i>
-                <span data-i18n="data.import">导入</span>
-              </button>
-              <input type="file" id="import-file-input" accept=".json" class="d-none" />
-            </div>
-            <div class="import-feedback" id="import-feedback"></div>
+        </div>
+        <div class="trust-item">
+          <i class="bi bi-wifi-off" aria-hidden="true"></i>
+          <div>
+            <strong data-i18n="trust.offlineTitle">安装后可离线使用</strong>
+            <span data-i18n="trust.offlineText">手机、平板和电脑都适用</span>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+
+      <div class="identity-footer">
+        <button type="button" class="btn-install" id="btn-install" hidden>
+          <i class="bi bi-plus-square" aria-hidden="true"></i>
+          <span data-i18n="install.action">安装到此设备</span>
+        </button>
+        <p class="install-hint" id="install-hint" aria-live="polite"></p>
+        <div class="connection-status" id="connection-status" role="status">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span data-i18n="status.online">已就绪 · 支持离线</span>
+        </div>
+      </div>
+    </aside>
+
+    <section class="generator-panel" aria-labelledby="generator-title">
+      <header class="panel-header">
+        <div>
+          <span class="section-index">01</span>
+          <h2 id="generator-title" data-i18n="form.title">生成密码</h2>
+        </div>
+        <div class="utility-actions">
+          <button type="button" class="utility-button language-button" id="btn-lang-toggle">
+            <span data-i18n="lang.toggle">EN</span>
+          </button>
+          <button type="button" class="utility-button" id="btn-theme-toggle"
+            data-i18n-aria="aria.toggleTheme" aria-label="切换深色或浅色主题">
+            <i class="bi bi-moon-fill" aria-hidden="true"></i>
+          </button>
+        </div>
+      </header>
+
+      <div class="privacy-note">
+        <i class="bi bi-shield-check" aria-hidden="true"></i>
+        <span data-i18n="privacy.banner">本地计算，不传输、不追踪、不保存记忆密码</span>
+      </div>
+
+      <form id="generator-form" novalidate>
+        <div class="field-group">
+          <div class="field-heading">
+            <label for="pwd" data-i18n="input.masterPassword">记忆密码</label>
+            <span data-i18n="input.masterPassword.hint">你唯一需要记住的密码</span>
+          </div>
+          <div class="input-shell position-relative">
+            <input type="password" class="form-control" id="pwd"
+              data-i18n-placeholder="input.masterPassword.placeholder" placeholder="输入记忆密码"
+              data-i18n-aria="input.masterPassword" aria-label="记忆密码"
+              autocomplete="off" autocapitalize="none" spellcheck="false" />
+            <button type="button" class="field-action" id="btn-toggle-pwd"
+              data-i18n-aria="aria.showPassword" aria-label="显示密码">
+              <i class="bi bi-eye" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="invalid-feedback" data-i18n="input.masterPassword.error">请输入记忆密码</div>
+        </div>
+
+        <div class="field-group service-code-wrapper position-relative">
+          <div class="field-heading">
+            <label for="key" data-i18n="input.serviceCode">服务代码</label>
+            <span data-i18n="input.serviceCode.hint">为每个服务使用唯一名称</span>
+          </div>
+          <div class="input-shell">
+            <input type="text" class="form-control" id="key"
+              data-i18n-placeholder="input.serviceCode.placeholder" placeholder="例如 github"
+              data-i18n-aria="input.serviceCode" aria-label="服务代码"
+              aria-expanded="false" aria-controls="service-code-dropdown"
+              autocomplete="off" autocapitalize="none" spellcheck="false" />
+          </div>
+          <div class="invalid-feedback" data-i18n="input.serviceCode.error">请输入服务代码</div>
+          <div class="service-code-dropdown" id="service-code-dropdown"
+            role="list" data-i18n-aria="serviceCode.history" aria-label="服务代码历史"></div>
+        </div>
+
+        <div class="advanced-section">
+          <button class="advanced-toggle" type="button"
+            data-bs-toggle="collapse" data-bs-target="#advancedOptions"
+            aria-expanded="false" aria-controls="advancedOptions">
+            <span>
+              <strong data-i18n="options.toggle">生成选项</strong>
+              <small data-i18n="options.summary">默认使用推荐的安全设置</small>
+            </span>
+            <i class="bi bi-chevron-down advanced-chevron" aria-hidden="true"></i>
+          </button>
+
+          <div class="collapse" id="advancedOptions">
+            <div class="advanced-panel">
+              <div class="option-block">
+                <span class="option-label" data-i18n="options.mode">输出模式</span>
+                <div class="mode-switch" role="group" data-i18n-aria="options.mode">
+                  <input type="radio" class="btn-check" name="output_mode"
+                    id="mode_password" value="password" checked />
+                  <label for="mode_password" data-i18n="options.modePassword">密码</label>
+                  <input type="radio" class="btn-check" name="output_mode"
+                    id="mode_passphrase" value="passphrase" />
+                  <label for="mode_passphrase" data-i18n="options.modePassphrase">短语</label>
+                </div>
+              </div>
+
+              <div id="passphraseOptions" style="display:none;">
+                <div class="option-block">
+                  <div class="option-row">
+                    <span class="option-label" data-i18n="options.wordCount">词数</span>
+                    <output class="option-value" id="word_count_display" for="word_count">5</output>
+                  </div>
+                  <input type="range" class="form-range" id="word_count"
+                    min="4" max="8" value="5"
+                    data-i18n-aria="options.wordCount" aria-label="词数" />
+                </div>
+                <div class="field-group compact-field">
+                  <label for="separator" data-i18n="options.separator">分隔符</label>
+                  <select class="form-select" id="separator"
+                    data-i18n-aria="options.separator" aria-label="分隔符">
+                    <option value="-" selected>-</option>
+                    <option value=".">.</option>
+                    <option value=" ">&nbsp;</option>
+                    <option value="_">_</option>
+                  </select>
+                  <div class="form-hint" data-i18n="options.wordlistNote">BIP39 英语词表 · 2048 词</div>
+                </div>
+              </div>
+
+              <div id="passwordOptions">
+                <div class="option-block">
+                  <div class="option-row">
+                    <span class="option-label" data-i18n="options.length">密码长度</span>
+                    <output class="option-value" id="pwd_length_display" for="pwd_length">16</output>
+                  </div>
+                  <input type="range" class="form-range" id="pwd_length"
+                    min="10" max="20" value="16"
+                    data-i18n-aria="options.length" aria-label="密码长度" />
+                </div>
+
+                <div class="switch-grid">
+                  <label class="switch-card" for="rule_of_punctuation">
+                    <span data-i18n="options.punctuation">使用标点符号</span>
+                    <span class="form-switch">
+                      <input class="form-check-input" type="checkbox"
+                        id="rule_of_punctuation" checked />
+                    </span>
+                  </label>
+                  <label class="switch-card" for="rule_of_letter">
+                    <span data-i18n="options.caseSensitive">区分大小写</span>
+                    <span class="form-switch">
+                      <input class="form-check-input" type="checkbox"
+                        id="rule_of_letter" checked />
+                    </span>
+                  </label>
+                </div>
+
+                <div class="field-group compact-field">
+                  <label for="algorithm_version" data-i18n="options.algorithm">算法版本</label>
+                  <select class="form-select" id="algorithm_version"
+                    data-i18n-aria="options.algorithm" aria-label="算法版本">
+                    <option value="2" selected data-i18n="options.v2">v2（推荐）</option>
+                    <option value="1" data-i18n="options.v1">v1（旧版兼容）</option>
+                  </select>
+                  <div class="form-hint" data-i18n="options.hint">v2 更安全；v1 用于找回旧密码</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <div class="result-heading">
+            <span data-i18n="password.output">生成结果</span>
+            <span class="strength-label" id="strength-text"></span>
+          </div>
+          <div class="password-display" id="password-display" aria-live="polite">
+            <div class="password-chars" id="password-chars">
+              <span class="password-placeholder" data-i18n="password.placeholder">结果会显示在这里</span>
+            </div>
+            <button class="btn-copy-inline" id="btn_copy" type="button"
+              data-i18n-aria="password.copyLabel" aria-label="复制密码">
+              <i class="bi bi-copy" aria-hidden="true"></i>
+            </button>
+          </div>
+          <input type="hidden" id="code" value="" />
+          <div class="strength-meter" id="strength-meter"
+            data-i18n-aria="password.strengthLabel" aria-label="密码强度"
+            data-strength="0">
+            <div class="strength-segment" data-level="1"></div>
+            <div class="strength-segment" data-level="2"></div>
+            <div class="strength-segment" data-level="3"></div>
+            <div class="strength-segment" data-level="4"></div>
+          </div>
+        </div>
+
+        <button class="btn-generate" type="button" id="btn_gencode">
+          <span data-i18n="password.generate">生成密码</span>
+          <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </button>
+
+        <div id="form-errors" class="visually-hidden"
+          aria-live="assertive" aria-atomic="true"></div>
+      </form>
+
+      <footer class="panel-footer">
+        <details class="info-details">
+          <summary>
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            <span data-i18n="instructions.title">如何使用</span>
+          </summary>
+          <ol>
+            <li data-i18n="instructions.1">记忆密码是你的主密钥，只需记住它</li>
+            <li data-i18n="instructions.2">为每个服务设置唯一代码，例如 github</li>
+            <li data-i18n="instructions.3">同样的输入总会生成同样的结果</li>
+          </ol>
+        </details>
+
+        <div class="data-portability">
+          <button type="button" class="btn-portability" id="btn-export">
+            <i class="bi bi-download" aria-hidden="true"></i>
+            <span data-i18n="data.export">导出服务代码</span>
+          </button>
+          <button type="button" class="btn-portability" id="btn-import">
+            <i class="bi bi-upload" aria-hidden="true"></i>
+            <span data-i18n="data.import">导入</span>
+          </button>
+          <input type="file" id="import-file-input" accept=".json,application/json" class="d-none" />
+        </div>
+        <div class="import-feedback" id="import-feedback" aria-live="polite"></div>
+      </footer>
+    </section>
+  </main>
 
   <script src="js/bootstrap.min.js"></script>
   <script src="js/sha512.min.js"></script>

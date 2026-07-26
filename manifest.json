@@ -1,15 +1,43 @@
 {
-  "name": "密码生成工具 - Password Generator",
+  "id": "./",
+  "name": "密码生成器 · Password Generator",
   "short_name": "密码生成",
+  "description": "一款本地运行、可离线使用的确定性密码生成工具。",
+  "lang": "zh-CN",
+  "dir": "ltr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f5f5f7",
-  "theme_color": "#f5f5f7",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#f1f0e9",
+  "theme_color": "#14231f",
+  "categories": ["security", "utilities", "productivity"],
+  "prefer_related_applications": false,
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

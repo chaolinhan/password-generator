@@ -1,4 +1,4 @@
-var CACHE_NAME = 'pw-gen-v6';
+var CACHE_NAME = 'pw-gen-v9';
 var ASSETS = [
   './',
   './index.html',
@@ -23,50 +23,60 @@ var ASSETS = [
   './offline.html'
 ];
 
-self.addEventListener('install', function(event) {
+self.addEventListener('install', function (event) {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
+    caches.open(CACHE_NAME).then(function (cache) {
       return cache.addAll(ASSETS);
+    }).then(function () {
+      return self.skipWaiting();
     })
   );
 });
 
-self.addEventListener('activate', function(event) {
+self.addEventListener('activate', function (event) {
   event.waitUntil(
-    caches.keys().then(function(names) {
-      var oldNames = names.filter(function(name) {
+    caches.keys().then(function (names) {
+      var oldNames = names.filter(function (name) {
         return name !== CACHE_NAME;
       });
-      var hadOldCaches = oldNames.length > 0;
-      return Promise.all(
-        oldNames.map(function(name) { return caches.delete(name); })
-      ).then(function() {
-        return hadOldCaches;
+      return Promise.all(oldNames.map(function (name) {
+        return caches.delete(name);
+      })).then(function () {
+        return oldNames.length > 0;
       });
-    }).then(function(hadOldCaches) {
-      return self.clients.claim().then(function() {
-        return hadOldCaches;
-      });
-    }).then(function(hadOldCaches) {
-      if (hadOldCaches) {
-        return self.clients.matchAll().then(function(clients) {
-          clients.forEach(function(client) {
+    }).then(function (updated) {
+      return self.clients.claim().then(function () {
+        if (!updated) return;
+        return self.clients.matchAll({ type: 'window' }).then(function (clients) {
+          clients.forEach(function (client) {
             client.postMessage({ type: 'SW_UPDATED' });
           });
         });
-      }
+      });
     })
   );
 });
 
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', function (event) {
+  if (event.request.method !== 'GET') return;
+
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(function () {
+        return caches.match(event.request).then(function (requestedPage) {
+          if (requestedPage) return requestedPage;
+          return caches.match('./index.html').then(function (cachedPage) {
+            return cachedPage || caches.match('./offline.html');
+          });
+        });
+      })
+    );
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request).then(function(cached) {
+    caches.match(event.request).then(function (cached) {
       return cached || fetch(event.request);
-    }).catch(function() {
-      if (event.request.mode === 'navigate') {
-        return caches.match('./offline.html');
-      }
     })
   );
 });

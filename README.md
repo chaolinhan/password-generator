@@ -1,6 +1,8 @@
 # password-generator
 
-预览地址：https://mrjooz.github.io/password-generator/
+在线访问：https://mrjooz.github.io/password-generator/
+
+界面会自动适配手机、平板和电脑。支持的浏览器会显示“安装到此设备”，安装后可像原生应用一样启动并离线使用；iPhone 和 iPad 可在 Safari 的分享菜单中选择“添加到主屏幕”。
 
 ## password-generator 是什么？
 
@@ -12,6 +14,17 @@ password-generator 是一款密码生成工具，用户只需要记住记忆密�
 - 所有计算操作都在本地进行，不会向服务器发送消息。
 - 可以自由选择是否使用标点以及是否区分字母大小写。
 - 自带密码复杂度检测
+- 支持响应式布局、深浅主题、中英文和 PWA 离线安装。
+
+## 本地运行
+
+项目无需构建或安装依赖：
+
+```sh
+python3 -m http.server 8000
+```
+
+打开 `http://localhost:8000/`。算法回归测试位于 `http://localhost:8000/test.html`。
 
 ## 页面截图
 
