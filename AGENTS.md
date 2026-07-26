@@ -18,7 +18,7 @@ After changing JavaScript, regenerate the matching minified file:
 
 ```sh
 npx terser src/app.js -o src/app.min.js --compress --mangle
-npx cleancss -o css/style.min.css css/style.css
+npx --package clean-css-cli cleancss -o css/style.min.css css/style.css
 ```
 
 Apply the same Terser pattern to other edited files in `src/`. When cached assets change, bump `CACHE_NAME` in `sw.js`.

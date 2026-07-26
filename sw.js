@@ -1,4 +1,4 @@
-var CACHE_NAME = 'pw-gen-v9';
+var CACHE_NAME = 'pw-gen-v10';
 var ASSETS = [
   './',
   './index.html',
